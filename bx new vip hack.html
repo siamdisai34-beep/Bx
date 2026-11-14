@@ -1,0 +1,285 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>BX VIP PRO MAX</title>
+<style>
+:root{color-scheme:dark}*{box-sizing:border-box}html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#05070a;color:#f5f7fa;font-family:Inter,system-ui,Arial,sans-serif}
+#game{position:fixed;inset:0;width:100%;height:100%;border:0;background:#05070a;z-index:1}
+#fullSnow{position:fixed;inset:0;width:100%;height:100%;pointer-events:none;z-index:50}
+#launch{position:fixed;z-index:60;left:22px;top:42%;width:66px;height:66px;border-radius:50%;padding:3px;border:2px solid #00f2fe;background:linear-gradient(135deg,#131b26,#07090f);box-shadow:0 0 20px rgba(0,242,254,0.7),0 0 10px rgba(251,191,36,0.4);touch-action:none;cursor:grab}
+#launch img{width:100%;height:100%;object-fit:cover;border-radius:50%}
+
+/* Floating & Swaying Levitation Animation for Hack Panel */
+#panel{display:none;position:fixed;z-index:60;left:22px;top:40%;width:260px;border:1px solid rgba(0,242,254,0.55);border-radius:18px;padding:12px;background:linear-gradient(145deg,rgba(18,24,34,0.96),rgba(7,10,15,0.98));box-shadow:0 25px 70px rgba(0,0,0,0.95),0 0 25px rgba(0,242,254,0.22),inset 0 1px rgba(255,255,255,0.15);backdrop-filter:blur(18px);overflow:hidden;transform-origin:center center}
+#panel.show{display:block;animation:floatLevitate 4s ease-in-out infinite}
+
+@keyframes floatLevitate{
+  0%, 100% { transform: translateY(0px) rotate(0deg); }
+  50% { transform: translateY(-8px) rotate(1.2deg); }
+}
+
+/* Dedicated Snow inside Hack Box */
+#panelSnow{position:absolute;inset:0;pointer-events:none;z-index:1;overflow:hidden}
+.box-flake{position:absolute;top:-12px;color:#fff;text-shadow:0 0 6px #00f2fe;animation:boxFall linear infinite;opacity:.9}
+@keyframes boxFall{0%{transform:translateY(0) translateX(0) rotate(0deg);opacity:0}15%{opacity:.95}85%{opacity:.85}100%{transform:translateY(280px) translateX(var(--dx)) rotate(220deg);opacity:0}}
+
+.panel-inner{position:relative;z-index:2}
+.head{display:flex;align-items:center;gap:8px;padding-bottom:8px;border-bottom:1px solid rgba(255,255,255,0.1);cursor:move;touch-action:none}
+.live-dot{width:7px;height:7px;border-radius:50%;background:#22c55e;box-shadow:0 0 8px #22c55e;animation:pulse 1.5s infinite}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.4}}
+.brand{font-weight:950;font-size:12px;letter-spacing:1px;flex:1;background:linear-gradient(90deg,#fff,#00f2fe,#fbbf24);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.btn{border:1px solid rgba(255,75,75,0.45);border-radius:7px;padding:4px 8px;background:rgba(255,75,75,0.2);color:#ff8585;font-weight:800;font-size:9px;cursor:pointer}
+
+.balance-bar{display:flex;justify-content:space-between;align-items:center;margin-top:9px;padding:6px 9px;background:rgba(0,242,254,0.08);border:1px solid rgba(0,242,254,0.22);border-radius:9px}
+.bal-label{color:#94a3b8;font-weight:800;font-size:8px;letter-spacing:1px}
+.bal-val{color:#22c55e;font-weight:950;font-family:monospace;font-size:12.5px}
+#balPopup{position:absolute;right:14px;top:40px;color:#22c55e;font-weight:950;font-size:12px;font-family:monospace;pointer-events:none;opacity:0;transition:all .5s ease;z-index:10}
+#balPopup.show{opacity:1;transform:translateY(-10px)}
+
+.meta-row{display:flex;justify-content:space-between;align-items:center;margin-top:8px}
+.meta{color:#94a3b8;font-size:8.5px;letter-spacing:1.2px;font-weight:800}
+.period{font-size:22px;font-weight:950;letter-spacing:1.5px;color:#00f2fe;text-shadow:0 0 12px rgba(0,242,254,0.4);margin:2px 0 6px}
+.timerline{display:flex;justify-content:space-between;align-items:center;color:#b8c1cd;font-size:9.5px;font-weight:700}
+.timer{font-size:21px;font-weight:950;color:#fff;font-variant-numeric:tabular-nums}
+.track{height:4px;border-radius:8px;background:#1e293b;margin-top:5px;overflow:hidden}
+.bar{height:100%;width:100%;background:linear-gradient(90deg,#00f2fe,#38bdf8,#fbbf24)}
+
+.signalbox{margin-top:9px;padding:9px;border:1px solid rgba(0,242,254,0.3);border-radius:12px;background:rgba(8,12,18,0.75);text-align:center}
+.signal-top{display:flex;justify-content:space-between;align-items:center;padding-bottom:4px;border-bottom:1px solid rgba(255,255,255,0.07);margin-bottom:4px}
+.trend-badge{font-size:8px;font-weight:900;padding:2px 6px;border-radius:4px;background:rgba(0,242,254,0.15);color:#00f2fe}
+.signal{font-size:42px;font-weight:950;letter-spacing:2px;margin:2px 0 0;color:#eaf8ff}
+.signal.big{color:#fbbf24;text-shadow:0 0 22px rgba(251,191,36,0.65)}
+.signal.small{color:#38bdf8;text-shadow:0 0 22px rgba(56,189,248,0.65)}
+
+.tg-link{display:block;margin-top:8px;padding:7px;text-align:center;background:rgba(0,136,204,0.15);border:1px solid rgba(0,136,204,0.4);border-radius:8px;color:#38bdf8;font-size:10px;font-weight:800;text-decoration:none;letter-spacing:0.5px}
+
+#modal{display:none;position:fixed;inset:0;z-index:80;background:rgba(2,3,8,0.82);backdrop-filter:blur(12px);align-items:center;justify-content:center;padding:18px}#modal.show{display:flex}
+.login{width:min(320px,100%);border-radius:22px;padding:24px;background:linear-gradient(145deg,#131926,#0b0f17);border:1px solid rgba(0,242,254,0.4);color:#f8fafc;box-shadow:0 25px 90px rgba(0,0,0,0.95);text-align:center}
+.login h2{margin:0 0 6px;font-size:20px;letter-spacing:1px;background:linear-gradient(90deg,#fff,#00f2fe,#fbbf24);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.login p{font-size:11px;color:#94a3b8;margin:0 0 16px}
+.login input{width:100%;padding:13px;border:1px solid #334155;border-radius:11px;font-size:16px;margin-bottom:12px;color:#fff;background:#090d14;text-align:center;outline:none;user-select:text}
+.login button{width:100%;padding:13px;border:0;border-radius:11px;background:linear-gradient(90deg,#00f2fe,#38bdf8);color:#06090f;font-weight:950;font-size:14px;cursor:pointer}
+.login a{display:inline-block;margin-top:13px;color:#38bdf8;font-size:12px;text-decoration:none;font-weight:700}
+
+#fxOverlay{display:none;position:fixed;inset:0;z-index:110;pointer-events:none;align-items:center;justify-content:center;background:transparent;backdrop-filter:blur(10px);animation:fxFade 2s ease-in-out forwards}
+#fxOverlay.win,#fxOverlay.loss{display:flex}
+#fxText{font-size:80px;font-weight:950;letter-spacing:6px;text-transform:uppercase;animation:fxPop .4s cubic-bezier(0.175,0.885,0.32,1.275)}
+#fxOverlay.win #fxText{color:#22c55e;text-shadow:0 0 25px rgba(34,197,94,0.85),0 4px 18px rgba(0,0,0,0.85)}
+#fxOverlay.loss #fxText{color:#ef4444;text-shadow:0 0 25px rgba(239,68,68,0.85),0 4px 18px rgba(0,0,0,0.85)}
+@keyframes fxPop{0%{transform:scale(0.4);opacity:0}100%{transform:scale(1);opacity:1}}
+@keyframes fxFade{0%{opacity:0}12%{opacity:1}82%{opacity:1}100%{opacity:0}}
+
+#toast{display:none;position:fixed;z-index:100;bottom:18px;left:50%;transform:translateX(-50%);background:#0f172a;color:#00f2fe;border:1px solid rgba(0,242,254,0.4);border-radius:10px;padding:9px 15px;font-size:12px;font-weight:800;box-shadow:0 10px 30px rgba(0,0,0,0.8)}
+</style></head>
+<body>
+<iframe id="game" src="https://hgnice.org/#/register?invitationCode=224271293722" allow="fullscreen; autoplay"></iframe>
+<canvas id="fullSnow"></canvas>
+<button id="launch" aria-label="Open BX VIP PRO MAX"><img src="https://iili.io/npg3LR2.jpg" alt="BX logo"></button>
+<section id="panel">
+ <div id="panelSnow"></div>
+ <div class="panel-inner">
+  <div class="head" id="drag"><span class="live-dot"></span><div class="brand">BX VIP PRO MAX</div><button class="btn" id="hide">HIDE</button></div>
+  <div class="balance-bar"><span class="bal-label">LIVE BALANCE</span><span class="bal-val" id="liveBalance">৳ 0.00</span></div>
+  <div id="balPopup"></div>
+  <div class="meta-row"><span class="meta">PERIOD (LAST 4)</span><span class="meta">30 SEC ROUND</span></div>
+  <div class="period" id="period">----</div>
+  <div class="timerline"><span>TIME LEFT</span><span class="timer" id="timer">30</span></div>
+  <div class="track"><div class="bar" id="bar"></div></div>
+  <div class="signalbox">
+   <div class="signal-top"><span class="meta">AI MARKET SIGNAL</span><span class="trend-badge" id="trendBadge">SCANNING</span></div>
+   <div class="signal" id="signal">WAIT</div>
+  </div>
+  <a href="https://t.me/bigcommety" target="_blank" rel="noopener" class="tg-link">💬 TELEGRAM VIP SUPPORT ↗</a>
+ </div>
+</section>
+<div id="modal"><div class="login"><h2>BX VIP PRO MAX</h2><p>ENTER VIP ACCESS PASSWORD</p><input id="pass" type="password" placeholder="Password" autocomplete="current-password"><button id="unlock">UNLOCK VIP PANEL</button><a href="https://t.me/bigcommety" target="_blank" rel="noopener">TELEGRAM SUPPORT ↗</a></div></div>
+<div id="fxOverlay"><div id="fxText">WIN</div></div>
+<div id="toast"></div>
+<audio id="welcome" src="https://files.catbox.moe/bz7msh.mp4" preload="auto" playsinline></audio>
+<audio id="win" src="https://files.catbox.moe/dd3kew.ogg" preload="auto" playsinline></audio>
+<audio id="loss" src="https://files.catbox.moe/bjq7h1.mp3" preload="auto" playsinline></audio>
+<script>
+const API='https://draw.ar-lottery01.com/WinGo/WinGo_30S/GetHistoryIssuePage.json';
+const $=id=>document.getElementById(id);
+let unlocked=false,welcomeDone=false,wasDragged=false,fxTimeout=null;
+let lastSeenIssue='',pendingIssue='',activeSignal='',signalHistory={},lastKnownBalance=null;
+
+function toast(s){$('toast').textContent=s;$('toast').style.display='block';clearTimeout(toast.t);toast.t=setTimeout(()=>$('toast').style.display='none',2600)}
+function play(id){const a=$(id);try{a.currentTime=0;const p=a.play();if(p&&p.catch)p.catch(()=>{})}catch(e){}}
+
+function unlockAudios(){['win','loss'].forEach(id=>{const a=$(id);if(a&&!a.dataset.primed){a.dataset.primed='1';a.volume=0;a.play().then(()=>{a.pause();a.currentTime=0;a.volume=1.0}).catch(()=>{a.volume=1.0})}})}
+
+function triggerScreenFX(type){
+  const overlay=$('fxOverlay'),text=$('fxText');
+  clearTimeout(fxTimeout);
+  overlay.className='';
+  void overlay.offsetWidth;
+  text.textContent=type.toUpperCase();
+  overlay.classList.add(type.toLowerCase());
+  fxTimeout=setTimeout(()=>{overlay.className=''},2000);
+}
+
+// Inner Box Snowfall
+(function initInnerSnow(){
+  const box=$('panelSnow');
+  for(let i=0;i<16;i++){
+    let f=document.createElement('span');
+    f.className='box-flake';
+    f.textContent=i%2===0?'❄':'✧';
+    f.style.left=(Math.random()*95)+'%';
+    f.style.fontSize=(10+Math.random()*7)+'px';
+    f.style.animationDuration=(1.8+Math.random()*2)+'s';
+    f.style.animationDelay=-(Math.random()*3)+'s';
+    f.style.setProperty('--dx',(Math.random()*26-13)+'px');
+    box.appendChild(f);
+  }
+})();
+
+// Fullscreen Premium 3D Snowfall Canvas
+(function initFullSnow(){
+  const canvas=$('fullSnow'),ctx=canvas.getContext('2d');
+  let w=canvas.width=window.innerWidth,h=canvas.height=window.innerHeight;
+  window.addEventListener('resize',()=>{w=canvas.width=window.innerWidth;h=canvas.height=window.innerHeight});
+  const flakes=[];
+  for(let i=0;i<110;i++){
+    const layer=i%3;
+    flakes.push({
+      x:Math.random()*w,y:Math.random()*h,
+      r:layer===0?(1.2+Math.random()*1.2):layer===1?(2.3+Math.random()*1.5):(3.6+Math.random()*2.0),
+      vy:layer===0?(0.6+Math.random()*0.6):layer===1?(1.1+Math.random()*0.8):(1.6+Math.random()*1.1),
+      swayAmp:0.4+Math.random()*1.0,swayFreq:0.008+Math.random()*0.015,
+      phase:Math.random()*Math.PI*2,opacity:layer===0?0.5:layer===1?0.75:0.9,
+      isCrystal:layer===2&&Math.random()>0.45
+    });
+  }
+  function render(){
+    ctx.clearRect(0,0,w,h);
+    for(let f of flakes){
+      f.y+=f.vy;f.phase+=f.swayFreq;f.x+=Math.sin(f.phase)*f.swayAmp;
+      if(f.y>h+10){f.y=-10;f.x=Math.random()*w}
+      if(f.x>w+10)f.x=-10;if(f.x<-10)f.x=w+10;
+      if(f.isCrystal){
+        ctx.save();ctx.translate(f.x,f.y);ctx.strokeStyle=`rgba(235,250,255,${f.opacity})`;ctx.lineWidth=1.2;
+        for(let a=0;a<3;a++){ctx.rotate(Math.PI/3);ctx.beginPath();ctx.moveTo(-f.r,0);ctx.lineTo(f.r,0);ctx.stroke()}
+        ctx.restore();
+      }else{
+        const grad=ctx.createRadialGradient(f.x,f.y,0,f.x,f.y,f.r);
+        grad.addColorStop(0,`rgba(255,255,255,${f.opacity})`);
+        grad.addColorStop(1,'rgba(220,247,255,0)');
+        ctx.fillStyle=grad;ctx.beginPath();ctx.arc(f.x,f.y,f.r,0,Math.PI*2);ctx.fill();
+      }
+    }
+    requestAnimationFrame(render);
+  }
+  render();
+})();
+
+function showPanel(){
+  if(!unlocked){
+    $('modal').classList.add('show');
+    setTimeout(()=>$('pass').focus(),100);
+    if(!welcomeDone){welcomeDone=true;play('welcome');unlockAudios()}
+  }else{
+    syncPos($('launch'),$('panel'));
+    $('launch').style.display='none';
+    $('panel').classList.add('show');
+  }
+}
+$('launch').addEventListener('click',()=>{if(wasDragged){wasDragged=false;return}showPanel()});
+
+$('unlock').onclick=()=>{
+  unlockAudios();
+  if($('pass').value==='BX-SIAM-FREE'){
+    unlocked=true;$('modal').classList.remove('show');
+    syncPos($('launch'),$('panel'));$('launch').style.display='none';$('panel').classList.add('show');toast('VIP UNLOCKED');
+  }else toast('Incorrect password')
+};
+$('pass').addEventListener('keydown',e=>{if(e.key==='Enter')$('unlock').click()});
+
+$('hide').onclick=()=>{syncPos($('panel'),$('launch'));$('panel').classList.remove('show');$('launch').style.display='block'};
+
+function syncPos(from,to){
+  const r=from.getBoundingClientRect();
+  to.style.left=Math.max(0,Math.min(innerWidth-(to.offsetWidth||260),r.left))+'px';
+  to.style.top=Math.max(0,Math.min(innerHeight-(to.offsetHeight||240),r.top))+'px';
+}
+
+function makeDraggable(el,handle){
+  let sx=0,sy=0,l=0,t=0,down=false;
+  handle.addEventListener('pointerdown',e=>{if(e.target.closest('button'))return;down=true;wasDragged=false;let r=el.getBoundingClientRect();sx=e.clientX;sy=e.clientY;l=r.left;t=r.top;handle.setPointerCapture(e.pointerId)});
+  handle.addEventListener('pointermove',e=>{if(!down)return;let dx=e.clientX-sx,dy=e.clientY-sy;if(Math.abs(dx)>5||Math.abs(dy)>5)wasDragged=true;if(wasDragged){let r=el.getBoundingClientRect();el.style.left=Math.max(0,Math.min(innerWidth-r.width,l+dx))+'px';el.style.top=Math.max(0,Math.min(innerHeight-r.height,t+dy))+'px';el.style.right='auto';el.style.bottom='auto'}});
+  handle.addEventListener('pointerup',()=>down=false);handle.addEventListener('pointercancel',()=>down=false)
+}
+makeDraggable($('launch'),$('launch'));makeDraggable($('panel'),$('drag'));
+
+function extractList(j){let d=j?.data;if(Array.isArray(d))return d;for(const k of ['list','records','result','history'])if(Array.isArray(d?.[k]))return d[k];if(Array.isArray(j?.list))return j.list;return []}
+function issueOf(x){return String(x?.issueNumber??x?.issue??x?.period??x?.periodNumber??x?.drawIssue??'')}
+function numberOf(x){let v=x?.number??x?.result??x?.openNumber??x?.winNumber;if(Array.isArray(v))v=v[0];let m=String(v??'').match(/\d+/);return m?Number(m[0]):null}
+function sizeOf(x){let n=numberOf(x);if(n!==null)return n>=5?'BIG':'SMALL';let s=String(x?.size??x?.bigSmall??'').toUpperCase();return s.includes('BIG')?'BIG':s.includes('SMALL')?'SMALL':''}
+
+async function analyzeMarketAndPredict(targetIssue, list){
+  const recent=list.slice(0,10).map(i=>({size:sizeOf(i),num:numberOf(i)})).filter(x=>x.size);
+  if(recent.length<3)return{signal:'BIG',pattern:'SYNCED'};
+  let r0=recent[0].size,r1=recent[1].size,r2=recent[2].size;
+  if(r0===r1&&r1===r2)return{signal:r0,pattern:'STREAK TREND'};
+  if(r0!==r1&&r1!==r2)return{signal:r0==='BIG'?'SMALL':'BIG',pattern:'ZIG-ZAG'};
+  let big=0,small=0;
+  recent.slice(0,8).forEach((e,i)=>{const w=8-i;if(e.size==='BIG')big+=w;else small+=w});
+  if(Math.abs(big-small)>=8)return{signal:big>small?'SMALL':'BIG',pattern:'MOMENTUM'};
+  return{signal:Number(targetIssue.slice(-1))%2===0?'BIG':'SMALL',pattern:'AI FLOW'};
+}
+
+function checkBalance(){
+  try{
+    const iDoc=$('game').contentDocument||$('game').contentWindow.document;
+    const bEl=iDoc?.querySelector('.balance-amount, .user-balance, [class*="balance"], [class*="Wallet"]');
+    if(bEl){
+      let m=bEl.textContent.match(/[\d,.]+/);
+      if(m){
+        let val=parseFloat(m[0].replace(/,/g,''));
+        if(!isNaN(val)){
+          if(lastKnownBalance!==null&&val>lastKnownBalance){
+            let diff=(val-lastKnownBalance).toFixed(2);
+            let pop=$('balPopup');pop.textContent='+'+diff;pop.classList.add('show');
+            setTimeout(()=>pop.classList.remove('show'),1500);
+          }
+          lastKnownBalance=val;$('liveBalance').textContent='৳ '+val.toLocaleString();
+        }
+      }
+    }
+  }catch(e){}
+}
+
+async function refresh(){
+  try{
+    let r=await fetch(API,{cache:'no-store'});if(!r.ok)throw Error();
+    let j=await r.json(),list=extractList(j);if(!list.length)throw Error();
+    let latest=list[0],issue=issueOf(latest),outcome=sizeOf(latest);if(!issue)throw Error();
+    
+    let runningIssue=(BigInt(issue)+1n).toString();
+    $('period').textContent=runningIssue.slice(-4);
+    
+    if(lastSeenIssue&&issue!==lastSeenIssue){
+      if(signalHistory[issue]&&outcome){
+        let won=(signalHistory[issue]===outcome);
+        play(won?'win':'loss');
+        triggerScreenFX(won?'WIN':'LOSS');
+      }
+      lastSeenIssue=issue;
+    }
+    if(!lastSeenIssue)lastSeenIssue=issue;
+    
+    if(pendingIssue!==runningIssue){
+      pendingIssue=runningIssue;
+      let analysis=await analyzeMarketAndPredict(runningIssue,list);
+      activeSignal=analysis.signal;
+      signalHistory[runningIssue]=activeSignal;
+      $('signal').textContent=activeSignal;
+      $('signal').className='signal '+activeSignal.toLowerCase();
+      $('trendBadge').textContent=analysis.pattern;
+    }
+    checkBalance();
+  }catch(e){$('period').textContent='ERR'}
+}
+
+function tick(){let s=30-Math.floor(Date.now()/1000)%30;$('timer').textContent=String(s).padStart(2,'0');$('bar').style.width=(s/30*100)+'%'}
+refresh();tick();setInterval(tick,250);setInterval(refresh,2000);
+</script></body></html>
